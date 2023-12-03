@@ -419,6 +419,8 @@ void SectionChunk::writeTo(uint8_t *buf) const {
   // Apply relocations.
   size_t inputSize = getSize();
   for (const coff_relocation &rel : getRelocs()) {
+    if (getMachine() == MIPS && rel.Type == IMAGE_REL_MIPS_PAIR)
+      continue;
     // Check for an invalid relocation offset. This check isn't perfect, because
     // we don't have the relocation size, which is only known after checking the
     // machine and relocation type. As a result, a relocation may overwrite the
