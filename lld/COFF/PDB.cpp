@@ -1736,6 +1736,8 @@ static uint32_t getSecrelReloc(Triple::ArchType arch) {
     return COFF::IMAGE_REL_ARM_SECREL;
   case Triple::aarch64:
     return COFF::IMAGE_REL_ARM64_SECREL;
+  case Triple::mipsel:
+    return COFF::IMAGE_REL_MIPS_SECREL;
   default:
     llvm_unreachable("unknown machine type");
   }

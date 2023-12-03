@@ -354,6 +354,21 @@ void SectionChunk::applyRelARM64(uint8_t *off, uint16_t type, OutputSection *os,
   }
 }
 
+void SectionChunk::applyRelMIPS(uint8_t *off, uint16_t type, OutputSection *os,
+                                uint64_t s, uint64_t p,
+                                uint64_t imageBase) const {
+  switch (type) {
+  case IMAGE_REL_MIPS_REFWORD: add32(off, s + imageBase); break;
+  case IMAGE_REL_MIPS_REFHI: add16(off, (s + imageBase) >> 16); break;
+  case IMAGE_REL_MIPS_REFLO: add16(off, s); break;
+  case IMAGE_REL_MIPS_PAIR: break;
+  case IMAGE_REL_MIPS_REFWORDNB: add32(off, s); break;
+  default:
+    error("unsupported relocation type 0x" + Twine::utohexstr(type) + " in " +
+          toString(file));
+  }
+}
+
 static void maybeReportRelocationToDiscarded(const SectionChunk *fromChunk,
                                              Defined *sym,
                                              const coff_relocation &rel,
@@ -456,6 +471,9 @@ void SectionChunk::applyRelocation(uint8_t *off,
   case Triple::aarch64:
     applyRelARM64(off, rel.Type, os, s, p, imageBase);
     break;
+  case Triple::mipsel:
+    applyRelMIPS(off, rel.Type, os, s, p, imageBase);
+    break;
   default:
     llvm_unreachable("unknown machine type");
   }
@@ -541,6 +559,10 @@ static uint8_t getBaserelType(const coff_relocation &rel,
   case Triple::aarch64:
     if (rel.Type == IMAGE_REL_ARM64_ADDR64)
       return IMAGE_REL_BASED_DIR64;
+    return IMAGE_REL_BASED_ABSOLUTE;
+  case Triple::mipsel:
+    if (rel.Type == IMAGE_REL_MIPS_REFWORD)
+      return IMAGE_REL_BASED_HIGHLOW;
     return IMAGE_REL_BASED_ABSOLUTE;
   default:
     llvm_unreachable("unknown machine type");
