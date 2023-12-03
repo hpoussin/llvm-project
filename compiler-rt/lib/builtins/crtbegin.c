@@ -71,7 +71,7 @@ __attribute__((section(".init_array"),
                used)) static void (*__init)(void) = __do_init;
 #endif
 #elif defined(__i386__) || defined(__x86_64__)
-__asm__(".pushsection .init,\"ax\",@progbits\n\t"
+__asm__(".pushsection .init,\"ax\"\n\t"
         "call __do_init\n\t"
         ".popsection");
 #elif defined(__riscv)
@@ -83,7 +83,7 @@ __asm__(".pushsection .init,\"ax\",%progbits\n\t"
         "bl __do_init\n\t"
         ".popsection");
 #elif defined(__mips__)
-__asm__(".pushsection .init,\"ax\",@progbits\n\t"
+__asm__(".pushsection .init,\"ax\"\n\t"
         "jal __do_init\n\t"
         ".popsection");
 #elif defined(__powerpc__) || defined(__powerpc64__)
@@ -142,7 +142,7 @@ __attribute__((section(".fini_array"),
                used)) static void (*__fini)(void) = __do_fini;
 #endif
 #elif defined(__i386__) || defined(__x86_64__)
-__asm__(".pushsection .fini,\"ax\",@progbits\n\t"
+__asm__(".pushsection .fini,\"ax\"\n\t"
         "call __do_fini\n\t"
         ".popsection");
 #elif defined(__arm__) || defined(__aarch64__)
@@ -150,7 +150,7 @@ __asm__(".pushsection .fini,\"ax\",%progbits\n\t"
         "bl __do_fini\n\t"
         ".popsection");
 #elif defined(__mips__)
-__asm__(".pushsection .fini,\"ax\",@progbits\n\t"
+__asm__(".pushsection .fini,\"ax\"\n\t"
         "jal __do_fini\n\t"
         ".popsection");
 #elif defined(__powerpc__) || defined(__powerpc64__)
