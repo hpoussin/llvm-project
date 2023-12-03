@@ -320,6 +320,8 @@ public:
 
   uint32_t getValue() const {
     assert(isSet() && "COFFSymbolRef points to nothing!");
+    if (isSection())
+      return 0;
     return CS16 ? CS16->Value : CS32->Value;
   }
 
@@ -383,8 +385,8 @@ public:
   }
 
   bool isCommon() const {
-    return (isExternal() || isSection()) &&
-           getSectionNumber() == COFF::IMAGE_SYM_UNDEFINED && getValue() != 0;
+    return isSection() || (isExternal() &&
+           getSectionNumber() == COFF::IMAGE_SYM_UNDEFINED && getValue() != 0);
   }
 
   bool isUndefined() const {
