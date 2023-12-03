@@ -2338,6 +2338,9 @@ void Writer::sortExceptionTables() {
   struct EntryArm {
     ulittle32_t begin, unwind;
   };
+  struct EntryMips {
+    ulittle32_t begin, end, handler, data, end_prolog;
+  };
 
   switch (ctx.config.machine) {
   case AMD64:
@@ -2350,6 +2353,9 @@ void Writer::sortExceptionTables() {
   case ARMNT:
   case ARM64:
     sortExceptionTable<EntryArm>(pdata);
+    break;
+  case MIPS:
+    sortExceptionTable<EntryMips>(pdata);
     break;
   default:
     if (pdata.first)
