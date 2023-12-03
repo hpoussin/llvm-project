@@ -358,9 +358,14 @@ void SectionChunk::applyRelMIPS(uint8_t *off, uint16_t type, OutputSection *os,
                                 uint64_t s, uint64_t p,
                                 uint64_t imageBase) const {
   switch (type) {
-  case IMAGE_REL_MIPS_REFWORD: add32(off, s + imageBase); break;
-  case IMAGE_REL_MIPS_REFHI: add16(off, (s + imageBase) >> 16); break;
-  case IMAGE_REL_MIPS_REFLO: add16(off, s); break;
+  case IMAGE_REL_MIPS_JMPADDR:   add32(off, (s + imageBase) >> 2); break;
+  case IMAGE_REL_MIPS_REFWORD:   add32(off, (s + imageBase) >> 2); break;
+  case IMAGE_REL_MIPS_REFHI:     add16(off, (s + imageBase) >> 16); break;
+  case IMAGE_REL_MIPS_REFLO:     add16(off, s); break;
+  case IMAGE_REL_MIPS_SECREL:    applySecRel(this, off, os, s); break;
+  case IMAGE_REL_MIPS_SECTION:
+    applySecIdx(off, os, file->ctx.outputSections.size());
+    break;
   case IMAGE_REL_MIPS_PAIR: break;
   case IMAGE_REL_MIPS_REFWORDNB: add32(off, s); break;
   default:
@@ -834,6 +839,12 @@ void ImportThunkChunkARM64::writeTo(uint8_t *buf) const {
   memcpy(buf, importThunkARM64, sizeof(importThunkARM64));
   applyArm64Addr(buf, impSymbol->getRVA(), rva, 12);
   applyArm64Ldr(buf + 4, off);
+}
+
+void ImportThunkChunkMIPS::writeTo(uint8_t *buf) const {
+  memcpy(buf, importThunkMIPS, sizeof(importThunkMIPS));
+  add16(buf, (rva + ctx.config.imageBase) >> 16);
+  add16(buf + 4, rva);
 }
 
 // A Thumb2, PIC, non-interworking range extension thunk.

@@ -115,6 +115,8 @@ static Chunk *makeImportThunk(COFFLinkerContext &ctx, DefinedImportData *s,
     return make<ImportThunkChunkX86>(ctx, s);
   if (machine == ARM64)
     return make<ImportThunkChunkARM64>(ctx, s);
+  if (machine == MIPS)
+    return make<ImportThunkChunkMIPS>(ctx, s);
   assert(machine == ARMNT);
   return make<ImportThunkChunkARM>(ctx, s);
 }

@@ -546,6 +546,13 @@ static const uint8_t importThunkARM64[] = {
     0x00, 0x02, 0x1f, 0xd6, // br   x16
 };
 
+static const uint8_t importThunkMIPS[] = {
+    0x00, 0x00, 0x08, 0x3c, // lui t0,at
+    0x00, 0x00, 0x08, 0x8d, // lw t0,at(t0)
+    0x08, 0x00, 0x00, 0x01, // jr t0
+    0x00, 0x00, 0x00, 0x00, // nop
+};
+
 // Windows-specific.
 // A chunk for DLL import jump table entry. In a final output, its
 // contents will be a JMP instruction to some __imp_ symbol.
@@ -599,6 +606,16 @@ public:
   size_t getSize() const override { return sizeof(importThunkARM64); }
   void writeTo(uint8_t *buf) const override;
   MachineTypes getMachine() const override { return ARM64; }
+};
+
+class ImportThunkChunkMIPS : public ImportThunkChunk {
+public:
+  explicit ImportThunkChunkMIPS(COFFLinkerContext &ctx, Defined *s)
+      : ImportThunkChunk(ctx, s) {
+    setAlignment(4);
+  }
+  size_t getSize() const override { return sizeof(importThunkMIPS); }
+  void writeTo(uint8_t *buf) const override;
 };
 
 class RangeExtensionThunkARM : public NonSectionCodeChunk {
